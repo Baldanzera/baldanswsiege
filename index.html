@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
         .search-box, .results, .add-counter-form { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .mob-input { display: flex; gap: 10px; margin-bottom: 10px; }
+        .mob-input { display: flex; gap: 10px; margin-bottom: 10px; position: relative; }
         input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
         button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background: #45a049; }
@@ -16,32 +16,28 @@
         .hidden { display: none; }
         .add-counter-btn { margin-top: 10px; background: #2196F3; }
         .dropdown-mobs {
-  position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.dropdown-mobs div {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dropdown-mobs div:hover {
-  background-color: #f5f5f5;
-}
-
-.dropdown-mobs strong {
-  color: #4CAF50;
-}
-
-.dropdown-mobs .awakened {
-  color: #666;
-  font-size: 0.9em;
-}
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .dropdown-mobs div {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .dropdown-mobs div:hover {
+            background-color: #f5f5f5;
+        }
+        .dropdown-mobs strong {
+            color: #4CAF50;
+        }
+        .dropdown-mobs .awakened {
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -69,88 +65,159 @@
     </div>
 
     <script>
-        <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzMW6D622O0zuHaGmBlnk8u8YbxdQ8ut0PcjzbT5AoQ0fWnhXzQklf7lLZO7ItRQlkG/exec";
-  let mobsList = [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbzMW6D622O0zuHaGmBlnk8u8YbxdQ8ut0PcjzbT5AoQ0fWnhXzQklf7lLZO7ItRQlkG/exec";
+        let mobsList = [];
 
-  async function carregarMobs() {
-    try {
-      const response = await fetch(`${API_URL}?action=getMobs`);
-      mobsList = await response.json();
-    } catch (error) {
-      console.error("Erro ao carregar mobs:", error);
-    }
-  }
+        async function carregarMobs() {
+            try {
+                const response = await fetch(`${API_URL}?action=getMobs`);
+                mobsList = await response.json();
+            } catch (error) {
+                console.error("Erro ao carregar mobs:", error);
+            }
+        }
 
-  function filtrarMobs(input) {
-    if (input.length < 3 || !mobsList.length) return [];
-    const lowerInput = input.toLowerCase();
-    return mobsList.filter(mob => {
-      return (
-        mob.base.toLowerCase().includes(lowerInput) || 
-        mob.awakened.toLowerCase().includes(lowerInput)
-      );
-    }).sort((a, b) => {
-      const aStartsWith = a.base.toLowerCase().startsWith(lowerInput) || 
-                         a.awakened.toLowerCase().startsWith(lowerInput);
-      const bStartsWith = b.base.toLowerCase().startsWith(lowerInput) || 
-                         b.awakened.toLowerCase().startsWith(lowerInput);
-      return aStartsWith && !bStartsWith ? -1 : bStartsWith ? 1 : 0;
-    });
-  }
+        function filtrarMobs(input) {
+            if (input.length < 3 || !mobsList.length) return [];
+            const lowerInput = input.toLowerCase();
+            return mobsList.filter(mob => {
+                return (
+                    mob.base.toLowerCase().includes(lowerInput) || 
+                    mob.awakened.toLowerCase().includes(lowerInput)
+                );
+            }).sort((a, b) => {
+                const aStartsWith = a.base.toLowerCase().startsWith(lowerInput) || 
+                                    a.awakened.toLowerCase().startsWith(lowerInput);
+                const bStartsWith = b.base.toLowerCase().startsWith(lowerInput) || 
+                                    b.awakened.toLowerCase().startsWith(lowerInput);
+                return aStartsWith && !bStartsWith ? -1 : bStartsWith ? 1 : 0;
+            });
+        }
 
-  function mostrarSugestoes(inputElement) {
-    const input = inputElement.value;
-    const sugestoes = filtrarMobs(input);
-    const dropdownId = `${inputElement.id}-dropdown`;
-    let dropdown = document.getElementById(dropdownId);
+        function mostrarSugestoes(inputElement) {
+            const input = inputElement.value;
+            const sugestoes = filtrarMobs(input);
+            const dropdownId = `${inputElement.id}-dropdown`;
+            let dropdown = document.getElementById(dropdownId);
 
-    if (dropdown) dropdown.remove();
-    if (sugestoes.length === 0) return;
+            if (dropdown) dropdown.remove();
+            if (sugestoes.length === 0) return;
 
-    dropdown = document.createElement('div');
-    dropdown.id = dropdownId;
-    dropdown.className = 'dropdown-mobs';
-    
-    sugestoes.forEach(mob => {
-      const item = document.createElement('div');
-      item.innerHTML = `<strong>${mob.base}</strong> <span class="awakened">(${mob.awakened})</span>`;
-      item.onclick = () => {
-        inputElement.value = mob.base;
-        dropdown.remove();
-      };
-      dropdown.appendChild(item);
-    });
+            dropdown = document.createElement('div');
+            dropdown.id = dropdownId;
+            dropdown.className = 'dropdown-mobs';
+            
+            sugestoes.forEach(mob => {
+                const item = document.createElement('div');
+                item.innerHTML = `<strong>${mob.base}</strong> <span class="awakened">(${mob.awakened})</span>`;
+                item.onclick = () => {
+                    inputElement.value = mob.base;
+                    dropdown.remove();
+                };
+                dropdown.appendChild(item);
+            });
 
-    inputElement.parentNode.appendChild(dropdown);
-  }
+            inputElement.parentNode.appendChild(dropdown);
+        }
 
-  document.addEventListener('DOMContentLoaded', carregarMobs);
-  document.querySelectorAll('#mob1, #mob2, #mob3').forEach(input => {
-    input.addEventListener('input', () => mostrarSugestoes(input));
-    input.addEventListener('blur', () => {
-      setTimeout(() => {
-        const dropdown = document.getElementById(`${input.id}-dropdown`);
-        if (dropdown) dropdown.remove();
-      }, 200);
-    });
-  });
+        document.addEventListener('DOMContentLoaded', carregarMobs);
+        document.querySelectorAll('#mob1, #mob2, #mob3').forEach(input => {
+            input.addEventListener('input', () => mostrarSugestoes(input));
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    const dropdown = document.getElementById(`${input.id}-dropdown`);
+                    if (dropdown) dropdown.remove();
+                }, 200);
+            });
+        });
 
-  // Seu código original (buscarCounters, adicionarCounter, etc.)
-  document.getElementById('search-btn').addEventListener('click', buscarCounters);
-  document.getElementById('show-add-form').addEventListener('click', () => {
-    document.getElementById('add-counter-form').classList.remove('hidden');
-  });
-  document.getElementById('save-counter-btn').addEventListener('click', adicionarCounter);
+        document.getElementById('search-btn').addEventListener('click', buscarCounters);
+        document.getElementById('show-add-form').addEventListener('click', () => {
+            document.getElementById('add-counter-form').classList.remove('hidden');
+        });
+        document.getElementById('save-counter-btn').addEventListener('click', adicionarCounter);
 
-  async function buscarCounters() {
-    // ... (mantenha o restante desta função igual)
-  }
+        async function buscarCounters() {
+            const mob1 = document.getElementById('mob1').value.trim();
+            if (!mob1) { alert("Pelo menos 1 mob é necessário!"); return; }
 
-  async function adicionarCounter() {
-    // ... (mantenha o restante desta função igual)
-  }
-</script>
+            const params = new URLSearchParams({ action: 'search', mob1 });
+            if (document.getElementById('mob2').value) params.set('mob2', document.getElementById('mob2').value);
+            if (document.getElementById('mob3').value) params.set('mob3', document.getElementById('mob3').value);
+
+            try {
+                const response = await fetch(`${API_URL}?${params.toString()}`);
+                const data = await response.json();
+                exibirResultados(data);
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<p>Erro: ${error.message}</p>`;
+            }
+        }
+
+        function exibirResultados(data) {
+            const resultsDiv = document.getElementById('results');
+            if (!data.results || data.results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <p>Nenhum counter encontrado.</p>
+                    <button onclick="document.getElementById('add-counter-form').classList.remove('hidden')">Adicionar Counter</button>
+                `;
+            } else {
+                let html = '<h2>Counters Encontrados</h2>';
+                data.results.forEach(counter => {
+                    const winRate = counter.wins + counter.losses > 0 ? Math.round((counter.wins / (counter.wins + counter.losses)) * 100) : 0;
+                    html += `
+                        <div class="counter">
+                            <p><strong>Defesa:</strong> ${counter.defense.join(', ')}</p>
+                            <p><strong>Counter:</strong> ${counter.attack.join(', ')}</p>
+                            <p><strong>Vitórias:</strong> ${counter.wins} | <strong>Derrotas:</strong> ${counter.losses} (${winRate}% sucesso)</p>
+                            ${counter.notes ? `<p><strong>Notas:</strong> ${counter.notes}</p>` : ''}
+                            <button class="vote-up" onclick="votar(${counter.id}, 'win')">▲ Vitória</button>
+                            <button class="vote-down" onclick="votar(${counter.id}, 'loss')">▼ Derrota</button>
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML = html;
+            }
+        }
+
+        async function adicionarCounter() {
+            const defMob1 = document.getElementById('mob1').value.trim();
+            const atkMob1 = document.getElementById('atk-mob1').value.trim();
+            const atkMob2 = document.getElementById('atk-mob2').value.trim();
+            const atkMob3 = document.getElementById('atk-mob3').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+
+            if (!defMob1 || !atkMob1 || !atkMob2 || !atkMob3) {
+                alert("Preencha pelo menos 1 mob da defesa e 3 do ataque!");
+                return;
+            }
+
+            const params = new URLSearchParams({
+                action: 'add',
+                def_mob1: defMob1,
+                def_mob2: document.getElementById('mob2').value || '',
+                def_mob3: document.getElementById('mob3').value || '',
+                atk_mob1: atkMob1,
+                atk_mob2: atkMob2,
+                atk_mob3: atkMob3,
+                notes: notes || ''
+            });
+
+            try {
+                await fetch(`${API_URL}?${params.toString()}`);
+                alert("Counter adicionado com sucesso!");
+                document.getElementById('add-counter-form').classList.add('hidden');
+                buscarCounters();
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
+        }
+
+        async function votar(row, type) {
+            const params = new URLSearchParams({ action: 'vote', row, type });
+            await fetch(`${API_URL}?${params.toString()}`);
+            buscarCounters();
+        }
     </script>
 </body>
 </html>
