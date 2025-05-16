@@ -4,41 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SW Siege Counter</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
-        .search-box, .results, .add-counter-form { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .mob-input { display: flex; gap: 10px; margin-bottom: 10px; position: relative; }
-        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
-        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #45a049; }
-        .vote-up { background: #4CAF50; }
-        .vote-down { background: #f44336; }
-        .hidden { display: none; }
-        .add-counter-btn { margin-top: 10px; background: #2196F3; }
-        .dropdown-mobs {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            width: 100%;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        .dropdown-mobs div {
-            padding: 8px;
-            cursor: pointer;
-        }
-        .dropdown-mobs div:hover {
-            background-color: #f5f5f5;
-        }
-        .dropdown-mobs strong {
-            color: #4CAF50;
-        }
-        .dropdown-mobs .awakened {
-            color: #666;
-            font-size: 0.9em;
-        }
-    </style>
+   <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 20px; 
+        background-color: #f5f5f5; 
+    }
+    .search-box, .results, .add-counter-form { 
+        background: #fff; 
+        padding: 20px; 
+        border-radius: 8px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
+    .mob-input { 
+        display: flex; 
+        gap: 10px; 
+        margin-bottom: 10px; 
+        position: relative; /* Isso já está correto */ 
+    }
+    input { 
+        padding: 8px; 
+        border: 1px solid #ddd; 
+        border-radius: 4px; 
+        flex: 1; 
+    }
+    button { 
+        padding: 8px 16px; 
+        background: #4CAF50; 
+        color: white; 
+        border: none; 
+        border-radius: 4px; 
+        cursor: pointer; 
+    }
+    button:hover { 
+        background: #45a049; 
+    }
+    .vote-up { 
+        background: #4CAF50; 
+    }
+    .vote-down { 
+        background: #f44336; 
+    }
+    .hidden { 
+        display: none; 
+    }
+    .add-counter-btn { 
+        margin-top: 10px; 
+        background: #2196F3; 
+    }
+    .dropdown-mobs {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        background: white;
+        border: 1px solid #ddd;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .dropdown-mobs div {
+        padding: 8px;
+        cursor: pointer;
+    }
+    .dropdown-mobs div:hover {
+        background-color: #f5f5f5;
+    }
+    .dropdown-mobs strong {
+        color: #2196F3; /* Mudei para azul para o nome awakened */
+    }
+    .dropdown-mobs .base-name {
+        color: #666;
+        font-size: 0.85em;
+        font-style: italic;
+    }
+</style>
 </head>
 <body>
     <h1>SW Siege Counter</h1>
