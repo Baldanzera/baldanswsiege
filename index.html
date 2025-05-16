@@ -57,23 +57,28 @@
     }
     .dropdown-mobs {
         position: absolute;
-        top: calc(100% + 5px);
-        left: 0;
-        background: white;
-        border: 1px solid #ddd;
-        width: 100%;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .dropdown-mobs div {
-        padding: 8px;
-        cursor: pointer;
-    }
-    .dropdown-mobs div:hover {
-        background-color: #f5f5f5;
-    }
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-top: -1px;
+}
+
+.dropdown-mobs div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-mobs div:hover {
+    background-color: #f5f5f5;
+}
     .dropdown-mobs strong {
         color: #2196F3; /* Mudei para azul para o nome awakened */
     }
