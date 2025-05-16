@@ -158,9 +158,9 @@
             
             sugestoes.forEach(mob => {
                 const item = document.createElement('div');
-                item.innerHTML = `<strong>${mob.base}</strong> <span class="awakened">(${mob.awakened})</span>`;
-                item.onclick = () => {
-                    inputElement.value = mob.base;
+                item.innerHTML = `<strong>${mob.awakened}</strong> <span class="base-name">(${mob.base})</span>`;
+        item.onclick = () => {
+            inputElement.value = mob.awakened;
                     dropdown.remove();
                 };
                 dropdown.appendChild(item);
