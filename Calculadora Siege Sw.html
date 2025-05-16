@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW Siege Counter</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
+        .search-box, .results, .add-counter-form { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .mob-input { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
+        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .vote-up { background: #4CAF50; }
+        .vote-down { background: #f44336; }
+        .hidden { display: none; }
+        .add-counter-btn { margin-top: 10px; background: #2196F3; }
+    </style>
+</head>
+<body>
+    <h1>SW Siege Counter</h1>
+    <div class="search-box">
+        <h2>Buscar Defesa</h2>
+        <div class="mob-input">
+            <input type="text" id="mob1" placeholder="Mob 1" autocomplete="off">
+            <input type="text" id="mob2" placeholder="Mob 2 (opcional)" autocomplete="off">
+            <input type="text" id="mob3" placeholder="Mob 3 (opcional)" autocomplete="off">
+        </div>
+        <button id="search-btn">Buscar Counters</button>
+    </div>
+    <div class="results" id="results"></div>
+    <button id="show-add-form" class="add-counter-btn hidden">Adicionar Novo Counter</button>
+    <div class="add-counter-form hidden" id="add-counter-form">
+        <h2>Adicionar Counter</h2>
+        <div class="mob-input">
+            <input type="text" id="atk-mob1" placeholder="Seu Mob 1" autocomplete="off">
+            <input type="text" id="atk-mob2" placeholder="Seu Mob 2" autocomplete="off">
+            <input type="text" id="atk-mob3" placeholder="Seu Mob 3" autocomplete="off">
+        </div>
+        <input type="text" id="notes" placeholder="Observações (opcional)">
+        <button id="save-counter-btn">Salvar Counter</button>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzAjV9SDB9i5kEUmRumNmCT3B1gWNAQJWG-Cesi4eXbRt7dt5XhP2HWc1XeIRab6hXi/exec";
+        document.getElementById('search-btn').addEventListener('click', buscarCounters);
+        document.getElementById('show-add-form').addEventListener('click', () => {
+            document.getElementById('add-counter-form').classList.remove('hidden');
+        });
+        document.getElementById('save-counter-btn').addEventListener('click', adicionarCounter);
+
+        async function buscarCounters() {
+            const mob1 = document.getElementById('mob1').value.trim();
+            if (!mob1) { alert("Pelo menos 1 mob é necessário!"); return; }
+
+            const params = new URLSearchParams({ action: 'search', mob1 });
+            if (document.getElementById('mob2').value) params.set('mob2', document.getElementById('mob2').value);
+            if (document.getElementById('mob3').value) params.set('mob3', document.getElementById('mob3').value);
+
+            try {
+                const response = await fetch(`${API_URL}?${params.toString()}`);
+                const data = await response.json();
+                exibirResultados(data);
+                // Mostra o botão "Adicionar Novo Counter" independente do resultado
+                document.getElementById('show-add-form').classList.remove('hidden');
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<p>Erro: ${error.message}</p>`;
+            }
+        }
+
+        function exibirResultados(data) {
+            const resultsDiv = document.getElementById('results');
+            if (!data.results || data.results.length === 0) {
+                resultsDiv.innerHTML = `<p>Nenhum counter encontrado para esta defesa.</p>`;
+            } else {
+                let html = '<h2>Counters Encontrados</h2>';
+                data.results.forEach(counter => {
+                    const winRate = counter.wins + counter.losses > 0 ? Math.round((counter.wins / (counter.wins + counter.losses)) * 100) : 0;
+                    html += `
+                        <div class="counter">
+                            <p><strong>Defesa:</strong> ${counter.defense.join(', ')}</p>
+                            <p><strong>Counter:</strong> ${counter.attack.join(', ')}</p>
+                            <p><strong>Vitórias:</strong> ${counter.wins} | <strong>Derrotas:</strong> ${counter.losses} (${winRate}% sucesso)</p>
+                            ${counter.notes ? `<p><strong>Notas:</strong> ${counter.notes}</p>` : ''}
+                            <button class="vote-up" onclick="votar(${counter.id}, 'win')">▲ Vitória</button>
+                            <button class="vote-down" onclick="votar(${counter.id}, 'loss')">▼ Derrota</button>
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML = html;
+            }
+        }
+
+        async function adicionarCounter() {
+            const defMob1 = document.getElementById('mob1').value.trim();
+            const atkMob1 = document.getElementById('atk-mob1').value.trim();
+            const atkMob2 = document.getElementById('atk-mob2').value.trim();
+            const atkMob3 = document.getElementById('atk-mob3').value.trim();
+            if (!defMob1 || !atkMob1 || !atkMob2 || !atkMob3) { alert("Preencha todos os mobs do ataque!"); return; }
+
+            const params = new URLSearchParams({
+                action: 'add',
+                def_mob1: defMob1,
+                def_mob2: document.getElementById('mob2').value || '',
+                def_mob3: document.getElementById('mob3').value || '',
+                atk_mob1: atkMob1,
+                atk_mob2: atkMob2,
+                atk_mob3: atkMob3,
+                notes: document.getElementById('notes').value || ''
+            });
+
+            try {
+                await fetch(`${API_URL}?${params.toString()}`);
+                alert("Counter adicionado!");
+                document.getElementById('add-counter-form').classList.add('hidden');
+                buscarCounters();
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
+        }
+
+        async function votar(row, type) {
+            const params = new URLSearchParams({ action: 'vote', row, type });
+            await fetch(`${API_URL}?${params.toString()}`);
+            buscarCounters();
+        }
+    </script>
+</body>
+</html>
